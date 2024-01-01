@@ -1,0 +1,14 @@
+{
+  "name": "twitter-engage",
+  "version": "1.0.0",
+  "main": "engage.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "puppeteer": "^21.1.0"
+  },
+  "description": ""
+}
