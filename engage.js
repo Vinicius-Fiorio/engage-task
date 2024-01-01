@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const puppeteer = require("puppeteer");
 
 //os textos que vão aparecer nos comentários(escolhido de forma aleatória)
@@ -12,9 +13,7 @@ const texts = [
 
 //tweets para reply/like/retweet
 const tweets = [
-  "link tweet 1",
-  "link tweet 2",
-
+  "https://twitter.com/TropadaDrih/status/1741213001619783749",
 ]
 
 //quantas contas você quer que faça esse engage ao msm tempo
@@ -67,11 +66,12 @@ async function likeRetweet(browser, url){
   const tweetID = urlSplited[urlSplited.length - 1];
 
   try {
+    await page.goto(url);
     await page.goto(`https://twitter.com/intent/retweet?tweet_id=${tweetID}`);
 
     await sleep(8000);
     await page.keyboard.press('Enter');
-    await sleep(2000);
+    await sleep(1000);
 
     await page.goto(`https://twitter.com/intent/like?tweet_id=${tweetID}`);
 
@@ -94,22 +94,30 @@ async function comment(browser, url, textComment, stop=false){
   try {
     await page.goto(url);
 
+    const folderPath = './images';
+    const fileList = fs.readdirSync(folderPath);
+    const imagePath = `${folderPath}/${fileList[getRandomInt(0, fileList.length - 1)]}`
+
+    await sleep(500);
     const element = await page.waitForXPath("//div[contains(@class, 'DraftEditor-root')]");
     await element.click();
+    await sleep(300);
+
+    await page.waitForSelector('input[type="file"][data-testid="fileInput"]');
+    const inputUploadHandle = await page.$('input[type="file"][data-testid="fileInput"]');
+    await inputUploadHandle.uploadFile(imagePath);
     await sleep(500);
 
+    await element.click();
     await page.keyboard.type(textComment, {delay: 100});
-    await sleep(1000);
+    await sleep(500);
 
     await page.keyboard.down('Control');
     await page.keyboard.press('Enter');
     await page.keyboard.up('Control');
 
-
     await sleep(2000);
-
     await page.close();
-
   } catch (error) {
     await page.close();
 
